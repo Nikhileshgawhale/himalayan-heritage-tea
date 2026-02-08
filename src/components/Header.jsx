@@ -21,10 +21,30 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Close mobile menu when clicking outside or on link
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (navOpen && !e.target.closest('nav') && !e.target.closest('button')) {
+        setNavOpen(false)
+      }
+    }
+    if (navOpen) {
+      document.addEventListener('click', handleClickOutside)
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.body.style.overflow = ''
+    }
+  }, [navOpen])
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[100] py-5 transition-all duration-300 ${
-        scrolled ? 'bg-bg/95 backdrop-blur-md' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-[100] py-3 md:py-5 transition-all duration-300 ${
+        scrolled ? 'bg-bg/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
       }`}
     >
       <div className="max-w-container mx-auto px-4 flex items-center justify-between">
@@ -32,7 +52,7 @@ export default function Header() {
           Himalayan Heritage <span className="text-accent-light font-medium group-hover:text-gold transition-colors duration-300">Wellness</span>
         </a>
         <nav
-          className={`flex gap-8 max-[900px]:fixed max-[900px]:top-0 max-[900px]:right-0 max-[900px]:w-[280px] max-[900px]:h-screen max-[900px]:flex-col max-[900px]:pt-20 max-[900px]:px-8 max-[900px]:pb-8 max-[900px]:bg-bg-alt max-[900px]:border-l border-gold/20 transition-[right] duration-300 ${
+          className={`flex gap-8 max-[900px]:fixed max-[900px]:top-0 max-[900px]:right-0 max-[900px]:w-[280px] max-[900px]:h-screen max-[900px]:flex-col max-[900px]:pt-20 max-[900px]:px-8 max-[900px]:pb-8 max-[900px]:bg-bg-alt max-[900px]:border-l border-gold/20 max-[900px]:z-[102] transition-[right] duration-300 ${
             navOpen ? 'max-[900px]:right-0' : 'max-[900px]:-right-full'
           }`}
         >
@@ -41,7 +61,14 @@ export default function Header() {
               key={href}
               href={href}
               className="text-muted text-sm font-medium no-underline hover:text-gold transition-colors"
-              onClick={() => setNavOpen(false)}
+              onClick={() => {
+                setNavOpen(false)
+                // Smooth scroll to section
+                const element = document.querySelector(href)
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }}
             >
               {label}
             </a>

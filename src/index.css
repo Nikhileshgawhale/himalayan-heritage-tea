@@ -5,9 +5,19 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
   body {
     @apply font-body text-gray-800 bg-bg antialiased;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+    /* Better touch scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Prevent zoom on input focus on iOS */
+  input, textarea, select {
+    font-size: 16px;
   }
 }
 
