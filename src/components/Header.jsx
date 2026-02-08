@@ -56,8 +56,17 @@ export default function Header() {
         {navOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-[101] max-[900px]:block hidden"
-            onClick={() => setNavOpen(false)}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setNavOpen(false)
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault()
+              setNavOpen(false)
+            }}
             aria-hidden="true"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
           />
         )}
         
@@ -69,12 +78,17 @@ export default function Header() {
           {/* Close button */}
           <button
             type="button"
-            onClick={() => setNavOpen(false)}
-            className="max-[900px]:block hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-800 hover:text-gold transition-colors"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setNavOpen(false)
+            }}
+            className="max-[900px]:block hidden absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-gray-800 hover:text-gold hover:bg-gold/10 rounded-full transition-all z-[103] cursor-pointer touch-manipulation"
             aria-label="Close menu"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
           
@@ -85,6 +99,7 @@ export default function Header() {
               className="text-muted text-sm font-medium no-underline hover:text-gold transition-colors py-2"
               onClick={(e) => {
                 e.preventDefault()
+                e.stopPropagation()
                 setNavOpen(false)
                 // Small delay to allow menu to close smoothly
                 setTimeout(() => {
@@ -98,8 +113,12 @@ export default function Header() {
                       behavior: 'smooth'
                     })
                   }
-                }, 300)
+                }, 100)
               }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+              }}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               {label}
             </a>
@@ -107,9 +126,14 @@ export default function Header() {
         </nav>
         <button
           type="button"
-          className="hidden max-[900px]:flex flex-col gap-1.5 bg-transparent border-none cursor-pointer p-2 z-[101] group"
+          className="hidden max-[900px]:flex flex-col gap-1.5 bg-transparent border-none cursor-pointer p-2 z-[101] group touch-manipulation"
           aria-label="Menu"
-          onClick={() => setNavOpen((o) => !o)}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setNavOpen((o) => !o)
+          }}
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <span className={`w-6 h-0.5 bg-gray-800 transition-all duration-300 ${navOpen ? 'rotate-45 translate-y-2' : ''}`} />
           <span className={`w-6 h-0.5 bg-gray-800 transition-all duration-300 ${navOpen ? 'opacity-0' : ''}`} />
