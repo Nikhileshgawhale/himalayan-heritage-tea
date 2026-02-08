@@ -23,20 +23,21 @@ export default function Header() {
 
   // Close mobile menu when clicking outside or on link
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (navOpen && !e.target.closest('nav') && !e.target.closest('button')) {
-        setNavOpen(false)
-      }
-    }
     if (navOpen) {
-      document.addEventListener('click', handleClickOutside)
       // Prevent body scroll when menu is open
       document.body.style.overflow = 'hidden'
+      // Close on escape key
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          setNavOpen(false)
+        }
+      }
+      document.addEventListener('keydown', handleEscape)
+      return () => {
+        document.removeEventListener('keydown', handleEscape)
+        document.body.style.overflow = ''
+      }
     } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.removeEventListener('click', handleClickOutside)
       document.body.style.overflow = ''
     }
   }, [navOpen])
@@ -51,23 +52,53 @@ export default function Header() {
         <a href="#" className="font-display text-xl font-semibold text-gray-800 tracking-wide no-underline hover:text-gold transition-colors duration-300 group">
           Himalayan Heritage <span className="text-accent-light font-medium group-hover:text-gold transition-colors duration-300">Wellness</span>
         </a>
+        {/* Mobile menu overlay */}
+        {navOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-[101] max-[900px]:block hidden"
+            onClick={() => setNavOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        
         <nav
-          className={`flex gap-8 max-[900px]:fixed max-[900px]:top-0 max-[900px]:right-0 max-[900px]:w-[280px] max-[900px]:h-screen max-[900px]:flex-col max-[900px]:pt-20 max-[900px]:px-8 max-[900px]:pb-8 max-[900px]:bg-bg-alt max-[900px]:border-l border-gold/20 max-[900px]:z-[102] transition-[right] duration-300 ${
+          className={`flex gap-8 max-[900px]:fixed max-[900px]:top-0 max-[900px]:right-0 max-[900px]:w-[280px] max-[900px]:h-screen max-[900px]:flex-col max-[900px]:pt-16 max-[900px]:px-6 max-[900px]:pb-8 max-[900px]:bg-bg-alt max-[900px]:border-l border-gold/20 max-[900px]:z-[102] max-[900px]:shadow-2xl transition-[right] duration-300 ${
             navOpen ? 'max-[900px]:right-0' : 'max-[900px]:-right-full'
           }`}
         >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={() => setNavOpen(false)}
+            className="max-[900px]:block hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-800 hover:text-gold transition-colors"
+            aria-label="Close menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
           {NAV_LINKS.map(({ href, label }) => (
             <a
               key={href}
               href={href}
-              className="text-muted text-sm font-medium no-underline hover:text-gold transition-colors"
-              onClick={() => {
+              className="text-muted text-sm font-medium no-underline hover:text-gold transition-colors py-2"
+              onClick={(e) => {
+                e.preventDefault()
                 setNavOpen(false)
-                // Smooth scroll to section
-                const element = document.querySelector(href)
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }
+                // Small delay to allow menu to close smoothly
+                setTimeout(() => {
+                  const element = document.querySelector(href)
+                  if (element) {
+                    const headerOffset = 80
+                    const elementPosition = element.getBoundingClientRect().top
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: 'smooth'
+                    })
+                  }
+                }, 300)
               }}
             >
               {label}
